@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:developer';
+
 import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/views/home_view.dart';
 import 'package:chat_app/views/signup_view.dart';
@@ -32,32 +34,32 @@ class _LoginViewState extends State<LoginView> {
     }
   }
 
-  void proceedLogIn(String? email, String? password) async {
-    UserCredential userCredential;
+  void proceedLogIn(String email, String password) async {
+    UserCredential? userCredential;
     try {
       userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email!, password: password!);
-
-      String uid = userCredential.user!.uid;
-
-      DocumentSnapshot userData = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get()
-          .whenComplete(() {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) {
-            return const HomeView();
-          }),
-        );
-      });
-      UserModel userModel =
-          UserModel.fromMap(userData.data() as Map<String, dynamic>);
-
-      print('Login is sucessful !');
+          .signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (ex) {
       print(ex.message.toString());
+    }
+    if (userCredential != null) {
+      String uid = userCredential.user!.uid;
+
+      DocumentSnapshot userData =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      UserModel userModel =
+          UserModel.fromMap(userData.data() as Map<String, dynamic>);
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) {
+          return HomeView(
+              userModel: userModel, firebaseUser: userCredential!.user!);
+        }),
+      );
+
+      log('Login is sucessful !');
     }
   }
 
