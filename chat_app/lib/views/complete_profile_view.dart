@@ -109,6 +109,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
         .doc(widget.userModel.uid)
         .update(widget.userModel.toMap())
         .then((value) {
+      Navigator.popUntil(context, (route) => route.isFirst);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) {
@@ -140,8 +141,9 @@ class _CompleteProfileState extends State<CompleteProfile> {
               children: [
                 CircleAvatar(
                   radius: 60.0,
-                  backgroundImage:
-                      (imageFile != null) ? FileImage(File(imageFile!.path)) : null,
+                  backgroundImage: (imageFile != null)
+                      ? FileImage(File(imageFile!.path))
+                      : null,
                   child: (imageFile == null)
                       ? const Icon(
                           Icons.person,
