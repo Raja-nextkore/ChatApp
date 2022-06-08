@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 
+import 'package:chat_app/helper/ui_helpers.dart';
 import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/views/home_view.dart';
 import 'package:chat_app/views/signup_view.dart';
@@ -26,9 +27,17 @@ class _LoginViewState extends State<LoginView> {
     String password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      print('Please fill all the fields and try again later');
+      UiHelper.showAlertDialog(
+        context,
+        'Incomplete Data',
+        'Please fill all the fields and try again later',
+      );
     } else if (password.length <= 7) {
-      print('password should contain atleast 8 character');
+      UiHelper.showAlertDialog(
+        context,
+        'Password length error',
+        'password should contain atleast 8 character',
+      );
     } else {
       proceedLogIn(email, password);
     }
@@ -36,11 +45,17 @@ class _LoginViewState extends State<LoginView> {
 
   void proceedLogIn(String email, String password) async {
     UserCredential? userCredential;
+    UiHelper.showLoading(context, 'Logging In...');
     try {
       userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (ex) {
-      print(ex.message.toString());
+      Navigator.pop(context);
+      UiHelper.showAlertDialog(
+        context,
+        'An error occured',
+        ex.message.toString(),
+      );
     }
     if (userCredential != null) {
       String uid = userCredential.user!.uid;
@@ -50,6 +65,8 @@ class _LoginViewState extends State<LoginView> {
 
       UserModel userModel =
           UserModel.fromMap(userData.data() as Map<String, dynamic>);
+      // ignore: use_build_context_synchronously
+      Navigator.popUntil(context, (route) => route.isFirst);
       // ignore: use_build_context_synchronously
       Navigator.pushReplacement(
         context,

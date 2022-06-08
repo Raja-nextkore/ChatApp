@@ -3,6 +3,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:chat_app/helper/ui_helpers.dart';
 import 'package:chat_app/views/home_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -84,14 +85,14 @@ class _CompleteProfileState extends State<CompleteProfile> {
   void checkValues() {
     String fullName = fullNameController.text.trim();
     if (fullName.isEmpty || imageFile == null) {
-      print('Please fill all the values');
+     UiHelper.showAlertDialog(context, 'Incomplete Data', 'Please fill all the fields and upload a profile picture');
     } else {
       uploadData();
     }
   }
 
   void uploadData() async {
-    log('calling uploadData');
+    UiHelper.showLoading(context, 'Uploading Image...');
     UploadTask uploadTask = FirebaseStorage.instance
         .ref('profilepictures')
         .child(widget.userModel.uid.toString())
@@ -101,9 +102,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
     String fullName = fullNameController.text.trim();
     widget.userModel.fullName = fullName;
     widget.userModel.profilePic = profilePic;
-    log('Data Uploading');
-    log(fullName);
-    log(profilePic);
+    
     await FirebaseFirestore.instance
         .collection('users')
         .doc(widget.userModel.uid)
@@ -117,9 +116,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
               userModel: widget.userModel, firebaseUser: widget.firebaseUser);
         }),
       );
-      log('Data Uploaded');
-      log(fullName);
-      log(profilePic);
+     
     });
   }
 

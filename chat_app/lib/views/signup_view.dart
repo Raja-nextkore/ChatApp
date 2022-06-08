@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../helper/ui_helpers.dart';
 import '../models/user_model.dart';
 
 class SignUpView extends StatefulWidget {
@@ -27,11 +28,23 @@ class _SignUpViewState extends State<SignUpView> {
     String confirmPassword = confirmPasswordController.text.trim();
 
     if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-      log('Please fill all the fields and try again later');
+      UiHelper.showAlertDialog(
+        context,
+        'Incomplete Data',
+        'Please fill all the fields and try again later',
+      );
     } else if (password.length <= 7 || confirmPassword.length <= 7) {
-      log('Password should contain atleast 8 character');
+      UiHelper.showAlertDialog(
+        context,
+        'Password length error',
+        'password should contain atleast 8 character',
+      );
     } else if (password != confirmPassword) {
-      log('Password don\'t match please check your password');
+      UiHelper.showAlertDialog(
+        context,
+        'Password Mismatch',
+        'Password don\'t match please check your password',
+      );
     } else {
       proceedSignUp(email, password);
     }
@@ -39,11 +52,17 @@ class _SignUpViewState extends State<SignUpView> {
 
   void proceedSignUp(String email, String password) async {
     UserCredential? credential;
+    UiHelper.showLoading(context, 'Creating Account...');
     try {
       credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (ex) {
-      print(ex.code.toString());
+      Navigator.pop(context);
+      UiHelper.showAlertDialog(
+        context,
+        'An error occured',
+        ex.message.toString(),
+      );
     }
     if (credential != null) {
       String uid = credential.user!.uid;

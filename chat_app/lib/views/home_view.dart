@@ -54,10 +54,6 @@ class _HomeViewState extends State<HomeView> {
               stream: FirebaseFirestore.instance
                   .collection('chatrooms')
                   .where('participent.${widget.userModel.uid}', isEqualTo: true)
-                  // .orderBy(
-                  //   'createdOn',
-                  //   descending: false,
-                  // )
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.active) {

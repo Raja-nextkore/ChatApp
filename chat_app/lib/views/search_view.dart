@@ -46,7 +46,7 @@ class _SearchViewState extends State<SearchView> {
           targetUser.uid.toString(): true,
         },
         lastMessage: '',
-        //createdOn: Timestamp.now(),
+        createdOn: Timestamp.now(),
       );
       await FirebaseFirestore.instance
           .collection('chatrooms')
@@ -58,7 +58,6 @@ class _SearchViewState extends State<SearchView> {
     return chatRoom;
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,7 +66,7 @@ class _SearchViewState extends State<SearchView> {
       ),
       body: SafeArea(
           child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 10.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         child: Column(
           children: [
             const SizedBox(
